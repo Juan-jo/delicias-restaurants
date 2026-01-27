@@ -1,0 +1,280 @@
+databaseChangeLog:
+  - changeSet:
+      id: 27032024_01
+      author: jdev
+      changes:
+        - sql:
+            sql: >-
+              create extension if not exists "uuid-ossp";
+              create extension if not exists postgis;
+  - changeSet:
+      id: 27032024_02
+      author: jdev
+      changes:
+        - createSequence:
+            cycle: false
+            dataType: INTEGER
+            startValue: 1
+            incrementBy: 1
+            minValue: 1
+            maxValue: 2147483647
+            schemaName: public
+            sequenceName: restaurant_template_id_seq
+        - createTable:
+            tableName: restaurant_template
+            columns:
+              - column:
+                  name: id
+                  type: INTEGER
+                  remarks: ID Unique, PK
+                  defaultValueComputed: nextval('restaurant_template_id_seq')
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_restaurant_template_id
+              - column:
+                  name: name
+                  type: VARCHAR
+              - column:
+                  name: description
+                  type: VARCHAR
+              - column:
+                  name: phone
+                  type: VARCHAR(15)
+              - column:
+                  name: address
+                  type: VARCHAR(80)
+              - column:
+                  name: image_logo_url
+                  type: VARCHAR
+              - column:
+                  name: image_cover_url
+                  type: VARCHAR
+              - column:
+                  name: position
+                  type: GEOGRAPHY(Point)
+                  remarks: longitud, latitud address location
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITHOUT TIME ZONE
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  remarks: Created on
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITHOUT TIME ZONE
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  remarks: Last Updated on
+
+  - changeSet:
+      id: 27032024_03
+      author: jdev
+      changes:
+        - createSequence:
+            cycle: false
+            dataType: INTEGER
+            startValue: 1
+            incrementBy: 1
+            minValue: 1
+            maxValue: 2147483647
+            schemaName: public
+            sequenceName: restaurant_schedule_id_seq
+        -  createTable:
+             tableName: restaurant_schedule
+             columns:
+               -  column:
+                    name: id
+                    type: INTEGER
+                    remarks: ID Unique, PK
+                    defaultValueComputed: nextval('restaurant_schedule_id_seq')
+                    constraints:
+                      nullable: false
+                      primaryKey: true
+                      primaryKeyName: pk_restaurant_schedule_id
+               - column:
+                   name: restaurant_id
+                   type: INTEGER
+               - column:
+                   name: day_of_week
+                   type: VARCHAR(10)
+               - column:
+                   name: start_time
+                   type: TIME WITHOUT TIME ZONE
+               - column:
+                   name: end_time
+                   type: TIME WITHOUT TIME ZONE
+               - column:
+                   name: available
+                   type: BOOL
+                   defaultValueBoolean: false
+                   remarks: Is available
+        - addUniqueConstraint:
+            columnNames: restaurant_id, day_of_week
+            constraintName: uk_restaurant_schedule_restaurant_day
+            schemaName: public
+            tableName: restaurant_schedule
+            validate: true
+        - addForeignKeyConstraint:
+            baseColumnNames: restaurant_id
+            baseTableName: restaurant_schedule
+            constraintName: restaurant_schedule_restaurant_id_fkey
+            referencedColumnNames: id
+            referencedTableName: restaurant_template
+            validate: true
+
+  - changeSet:
+      id: 27032024_04
+      author: jdev
+      changes:
+        - createSequence:
+            cycle: false
+            dataType: INTEGER
+            startValue: 1
+            incrementBy: 1
+            minValue: 1
+            maxValue: 2147483647
+            schemaName: public
+            sequenceName: restaurant_menu_seq
+        - createTable:
+            tableName: restaurant_menu
+            columns:
+              - column:
+                  name: id
+                  type: INTEGER
+                  remarks: ID Unique, PK
+                  defaultValueComputed: nextval('restaurant_menu_seq')
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_restaurant_menu_id
+              - column:
+                  name: name
+                  type: VARCHAR(80)
+                  remarks: Name menu
+                  constraints:
+                    nullable: false
+              - column:
+                  name: restaurant_id
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sequence
+                  type: INTEGER
+                  remarks: Sequence|Order menu display
+                  constraints:
+                    nullable: false
+              - column:
+                  name: available
+                  type: BOOL
+                  defaultValueBoolean: false
+                  remarks: Is available
+        - addUniqueConstraint:
+            columnNames: name, restaurant_id
+            constraintName: uk_restaurant_menu_name
+            schemaName: public
+            tableName: restaurant_menu
+            validate: true
+        - addForeignKeyConstraint:
+            baseColumnNames: restaurant_id
+            baseTableName: restaurant_menu
+            constraintName: restaurant_menu_restaurant_template_fkey
+            referencedColumnNames: id
+            referencedTableName: restaurant_template
+            validate: true
+
+  - changeSet:
+      id: 27032024_05
+      author: jdev
+      changes:
+        - createSequence:
+            cycle: false
+            dataType: INTEGER
+            startValue: 1
+            incrementBy: 1
+            minValue: 1
+            maxValue: 2147483647
+            schemaName: public
+            sequenceName: restaurant_menu_product_seq
+        - createTable:
+            tableName: restaurant_menu_products
+            columns:
+              - column:
+                  name: id
+                  type: INTEGER
+                  remarks: ID Unique, PK
+                  defaultValueComputed: nextval('restaurant_menu_product_seq')
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_restaurant_menu_product_id
+              - column:
+                  name: restaurant_menu_id
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+              - column:
+                  name: product_tmpl_id
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sequence
+                  type: INTEGER
+                  remarks: Sequence|Order menu display
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 27032024_06
+      author: jdev
+      changes:
+        - createSequence:
+            cycle: false
+            dataType: INTEGER
+            startValue: 1
+            incrementBy: 1
+            minValue: 1
+            maxValue: 2147483647
+            schemaName: public
+            sequenceName: restaurant_products_recommend_seq
+        - createTable:
+            tableName: restaurant_products_recommend
+            columns:
+              - column:
+                  name: id
+                  type: INTEGER
+                  remarks: ID Unique, PK
+                  defaultValueComputed: nextval('restaurant_products_recommend_seq')
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_restaurant_products_reccommend_id
+              - column:
+                  name: restaurant_tmpl_id
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+              - column:
+                  name: product_tmpl_id
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sequence
+                  type: INTEGER
+                  remarks: Sequence|Order menu display
+                  constraints:
+                    nullable: false
+        - addUniqueConstraint:
+            columnNames: restaurant_tmpl_id, product_tmpl_id
+            constraintName: uk_recommend_product
+            schemaName: public
+            tableName: restaurant_products_recommend
+            validate: true
+        - addForeignKeyConstraint:
+            baseColumnNames: restaurant_tmpl_id
+            baseTableName: restaurant_products_recommend
+            constraintName: products_recommend_restaurant_tmpl_id_fkey
+            referencedColumnNames: id
+            referencedTableName: restaurant_template
+            validate: true
