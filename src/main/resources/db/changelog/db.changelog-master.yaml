@@ -91,7 +91,7 @@ databaseChangeLog:
                       primaryKey: true
                       primaryKeyName: pk_restaurant_schedule_id
                - column:
-                   name: restaurant_id
+                   name: restaurant_tmpl_id
                    type: INTEGER
                - column:
                    name: day_of_week
@@ -108,13 +108,13 @@ databaseChangeLog:
                    defaultValueBoolean: false
                    remarks: Is available
         - addUniqueConstraint:
-            columnNames: restaurant_id, day_of_week
+            columnNames: restaurant_tmpl_id, day_of_week
             constraintName: uk_restaurant_schedule_restaurant_day
             schemaName: public
             tableName: restaurant_schedule
             validate: true
         - addForeignKeyConstraint:
-            baseColumnNames: restaurant_id
+            baseColumnNames: restaurant_tmpl_id
             baseTableName: restaurant_schedule
             constraintName: restaurant_schedule_restaurant_id_fkey
             referencedColumnNames: id
@@ -153,7 +153,7 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: restaurant_id
+                  name: restaurant_tmpl_id
                   type: INTEGER
                   constraints:
                     nullable: false
@@ -169,13 +169,13 @@ databaseChangeLog:
                   defaultValueBoolean: false
                   remarks: Is available
         - addUniqueConstraint:
-            columnNames: name, restaurant_id
+            columnNames: name, restaurant_tmpl_id
             constraintName: uk_restaurant_menu_name
             schemaName: public
             tableName: restaurant_menu
             validate: true
         - addForeignKeyConstraint:
-            baseColumnNames: restaurant_id
+            baseColumnNames: restaurant_tmpl_id
             baseTableName: restaurant_menu
             constraintName: restaurant_menu_restaurant_template_fkey
             referencedColumnNames: id
@@ -261,7 +261,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: sequence
-                  type: INTEGER
+                  type: smallint
                   remarks: Sequence|Order menu display
                   constraints:
                     nullable: false

@@ -1,37 +1,35 @@
-package org.delicias.menu.domain.model;
+package org.delicias.products_recommend.domain.model;
 
 import jakarta.persistence.*;
 import lombok.*;
 import org.delicias.restaurant.domain.model.RestaurantTemplate;
 
-
 @Entity
-@Table(name = "restaurant_menu")
+@Table(name = "restaurant_products_recommend")
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RestaurantMenu {
+public class ProductRecommend {
 
     @Id
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "restaurant_menu_seq")
+            generator = "restaurant_products_recommend_seq")
     @SequenceGenerator(
-            name = "restaurant_menu_seq",
+            name = "restaurant_products_recommend_seq",
             allocationSize = 1
     )
     private Integer id;
-
-    private String name;
 
     @ManyToOne
     @JoinColumn(name="restaurant_tmpl_id", referencedColumnName = "id")
     private RestaurantTemplate restaurantTmpl;
 
-    private boolean available;
+    @Column(name = "product_tmpl_id")
+    private Integer productTmplId;
 
-    private Integer sequence;
-
+    @Column(name = "sequence")
+    private Short sequence;
 }

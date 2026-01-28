@@ -37,7 +37,7 @@ public class RestaurantScheduled {
     private DayOfWeek dayOfWeek;
 
     @ManyToOne
-    @JoinColumn(name="restaurant_id", referencedColumnName = "id")
+    @JoinColumn(name="restaurant_tmpl_id", referencedColumnName = "id")
     private RestaurantTemplate restaurantTmpl;
 
     private Boolean available;
