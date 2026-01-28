@@ -1,4 +1,4 @@
-package org.delicias.restuarant_scheduled.domain.model;
+package org.delicias.scheduled.domain.model;
 
 import jakarta.persistence.*;
 import lombok.*;

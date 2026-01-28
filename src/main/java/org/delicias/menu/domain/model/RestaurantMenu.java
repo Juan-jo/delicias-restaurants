@@ -1,4 +1,4 @@
-package org.delicias.restaurant_menu.domain.model;
+package org.delicias.menu.domain.model;
 
 import jakarta.persistence.*;
 import lombok.*;

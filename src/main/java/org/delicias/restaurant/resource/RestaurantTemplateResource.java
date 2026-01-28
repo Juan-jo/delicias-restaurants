@@ -2,14 +2,21 @@ package org.delicias.restaurant.resource;
 
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.groups.ConvertGroup;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.delicias.common.validation.OnCreate;
+import org.delicias.common.validation.OnFilter;
 import org.delicias.common.validation.OnUpdate;
+import org.delicias.restaurant.dto.RestaurantFilterReqDTO;
 import org.delicias.restaurant.dto.RestaurantTemplateDTO;
 import org.delicias.restaurant.service.RestaurantTemplateService;
+import org.jboss.resteasy.reactive.multipart.FileUpload;
+
+import java.io.IOException;
+import java.util.Map;
 
 @Path("/api/restaurants")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -53,5 +60,40 @@ public class RestaurantTemplateResource {
         return Response.noContent().build();
     }
 
+    @POST
+    @Path("/filter")
+    public Response filterSearch(
+            @Valid @ConvertGroup(to = OnFilter.class) RestaurantFilterReqDTO req) {
+
+        return Response.ok(
+                service.filterSearch(req)
+        ).build();
+    }
+
+    @PUT
+    @Path("/picture")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response updateLogo(
+            @NotNull @FormParam("restaurantTmplId") Integer restaurantTmplId,
+            @NotNull @FormParam("file") FileUpload file,
+            @NotNull @FormParam("typeImage")TYPE_IMAGE typeImage
+    ) throws IOException {
+
+        Map<String, String> response = null;
+
+        if (typeImage.equals(TYPE_IMAGE.LOGO)) {
+            response = service.uploadLogo(restaurantTmplId, file);
+        } else if (typeImage.equals(TYPE_IMAGE.COVER)) {
+            response = service.uploadCover(restaurantTmplId, file);
+        }
+        return Response.ok(response).build();
+    }
+
+
+    public enum TYPE_IMAGE {
+        COVER,
+        LOGO
+    }
 
 }

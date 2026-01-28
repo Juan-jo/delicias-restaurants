@@ -4,22 +4,33 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
+import org.delicias.common.dto.PagedResult;
 import org.delicias.restaurant.domain.model.RestaurantTemplate;
 import org.delicias.restaurant.domain.repository.RestaurantTemplateRepository;
+import org.delicias.restaurant.dto.RestaurantFilterItemDTO;
+import org.delicias.restaurant.dto.RestaurantFilterReqDTO;
 import org.delicias.restaurant.dto.RestaurantTemplateDTO;
+import org.delicias.supabase.SupabaseStorageService;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.jboss.resteasy.reactive.multipart.FileUpload;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.jboss.resteasy.reactive.multipart.FileUpload;
 
 
 @ApplicationScoped
 public class RestaurantTemplateService {
 
-    // TODO: Add connect to Supabase
+    @Inject
+    SupabaseStorageService storageService;
 
     @Inject
     RestaurantTemplateRepository repository;
+
+    @ConfigProperty(name = "delicias.defaultLogo")
+    String defaultLogo;
 
     @Transactional
     public void create(RestaurantTemplateDTO templateDTO) {
@@ -65,10 +76,39 @@ public class RestaurantTemplateService {
         }
     }
 
+    public PagedResult<RestaurantFilterItemDTO> filterSearch(
+            RestaurantFilterReqDTO req
+    ) {
+
+        List<RestaurantFilterItemDTO> filtered = repository.searchByName(
+                        req.getName(),
+                        req.getPage(),
+                        req.getSize(),
+                        req.getOrderColumn(),
+                        req.toOrderDirection()
+                )
+                .stream().map(it -> RestaurantFilterItemDTO.builder()
+                        .id(it.getId())
+                        .name(it.getName())
+                        .picture(Optional.ofNullable(it.getImageLogo()).orElse(defaultLogo))
+                        .createdAt(it.getCreatedAt())
+                        .updatedAt(it.getUpdatedAt())
+                        .build()).toList();
+
+        long total = repository.countByName(req.getName());
+
+        return new PagedResult<>(
+                filtered,
+                total,
+                req.getPage(),
+                req.getSize()
+        );
+
+    }
 
 
     @Transactional
-    public Map<String, String> uploadLogo(Integer restaurantTmplId, FileUpload logoFile) {
+    public Map<String, String> uploadLogo(Integer restaurantTmplId, FileUpload logoFile) throws IOException {
 
         RestaurantTemplate restaurantTemplate = repository.findById(restaurantTmplId);
 
@@ -76,8 +116,41 @@ public class RestaurantTemplateService {
             throw new NotFoundException("Restaurant Tmpl Not Found");
         }
 
-        return Map.of("picture", "fileName");
+        String logoUrl = storageService.uploadFile(logoFile);
+
+        deleteCurrentPicture(restaurantTemplate.getImageLogo());
+
+        restaurantTemplate.setImageLogo(logoUrl);
+
+        return Map.of("picture", logoUrl);
     }
+
+    @Transactional
+    public Map<String, String> uploadCover(Integer restaurantTmplId, FileUpload logoFile) throws IOException {
+
+        RestaurantTemplate restaurantTemplate = repository.findById(restaurantTmplId);
+
+        if(restaurantTemplate == null) {
+            throw new NotFoundException("Restaurant Tmpl Not Found");
+        }
+
+        String logoUrl = storageService.uploadFile(logoFile);
+
+        deleteCurrentPicture(restaurantTemplate.getImageCover());
+
+        restaurantTemplate.setImageCover(logoUrl);
+
+        return Map.of("picture", logoUrl);
+    }
+
+
+    private void deleteCurrentPicture(String pictureUrl) {
+        if(Optional.ofNullable(pictureUrl).isPresent()) {
+            storageService.deleteFile(pictureUrl);
+        }
+    }
+
+
 
     private RestaurantTemplateDTO modelToRestaurantTemplateDTO(RestaurantTemplate template) {
 
