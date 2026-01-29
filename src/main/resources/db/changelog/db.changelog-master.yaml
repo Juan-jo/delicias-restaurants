@@ -159,7 +159,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: sequence
-                  type: INTEGER
+                  type: smallint
                   remarks: Sequence|Order menu display
                   constraints:
                     nullable: false
@@ -219,7 +219,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: sequence
-                  type: INTEGER
+                  type: smallint
                   remarks: Sequence|Order menu display
                   constraints:
                     nullable: false

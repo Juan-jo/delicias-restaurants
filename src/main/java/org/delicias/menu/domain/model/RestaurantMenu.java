@@ -1,6 +1,7 @@
 package org.delicias.menu.domain.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.delicias.restaurant.domain.model.RestaurantTemplate;
 
@@ -32,6 +33,9 @@ public class RestaurantMenu {
 
     private boolean available;
 
-    private Integer sequence;
+    private Short sequence;
 
+    public RestaurantMenu(Integer menuId) {
+        this.id = menuId;
+    }
 }
