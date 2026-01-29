@@ -3,7 +3,10 @@ package org.delicias.menu.domain.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.delicias.menu_products.domain.model.MenuProduct;
 import org.delicias.restaurant.domain.model.RestaurantTemplate;
+
+import java.util.Set;
 
 
 @Entity
@@ -34,6 +37,10 @@ public class RestaurantMenu {
     private boolean available;
 
     private Short sequence;
+
+    @OneToMany(mappedBy = "menu")
+    @OrderBy("sequence")
+    private Set<MenuProduct> products;
 
     public RestaurantMenu(Integer menuId) {
         this.id = menuId;
