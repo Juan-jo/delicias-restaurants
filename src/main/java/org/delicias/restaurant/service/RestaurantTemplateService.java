@@ -161,7 +161,7 @@ public class RestaurantTemplateService {
                 .phone(template.getPhone())
                 .logoPicture(
                         Optional.ofNullable(template.getImageLogo())
-                                .orElse("")
+                                .orElse(defaultLogo)
                 )
                 .build();
     }
