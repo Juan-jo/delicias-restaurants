@@ -13,4 +13,8 @@ public class MenuProductRepository implements PanacheRepositoryBase<MenuProduct,
     public List<MenuProduct> findByMenuId(Integer menuId) {
         return list("menu.id", Sort.ascending("sequence"), menuId);
     }
+
+    public List<MenuProduct> findByMenuIds(List<Integer> menuIds) {
+        return find("menu.id in ?1", Sort.ascending("sequence") ,menuIds).list();
+    }
 }

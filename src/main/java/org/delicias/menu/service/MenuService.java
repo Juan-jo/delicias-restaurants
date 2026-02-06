@@ -4,18 +4,33 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
+import org.delicias.common.dto.RestaurantMenuProductDTO;
 import org.delicias.menu.domain.model.RestaurantMenu;
 import org.delicias.menu.domain.repository.MenuRepository;
 import org.delicias.menu.dto.MenuDTO;
+import org.delicias.menu_products.domain.model.MenuProduct;
+import org.delicias.menu_products.domain.repository.MenuProductRepository;
+import org.delicias.rest.clients.ProductClient;
 import org.delicias.restaurant.domain.model.RestaurantTemplate;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class MenuService {
 
     @Inject
     MenuRepository repository;
+
+    @Inject
+    MenuProductRepository menuProductRepository;
+
+    @Inject
+    @RestClient
+    ProductClient productClient;
 
     @Transactional
     public void create(Integer restaurantTmplId, MenuDTO req) {
@@ -44,13 +59,51 @@ public class MenuService {
 
     public List<MenuDTO> findByRestaurant(Integer restaurantTmplId) {
 
-        return repository.findByRestaurantTmplId(restaurantTmplId)
-                .stream().map(it -> MenuDTO.builder()
-                        .id(it.getId())
-                        .name(it.getName())
-                        .sequence(it.getSequence())
-                        .available(it.isAvailable())
-                        .build()).toList();
+        List<RestaurantMenu> menus = repository.findByRestaurantTmplId(restaurantTmplId);
+
+        var menusId = menus.stream().map(RestaurantMenu::getId).toList();
+
+        List<MenuProduct> menuProducts = menuProductRepository.findByMenuIds(
+                menusId
+        );
+
+        var productsId = menuProducts.stream().map(MenuProduct::getProductTmplId).distinct().toList();
+
+        List<RestaurantMenuProductDTO> productsDetail = productClient.getProductsByIds(
+                productsId
+        );
+
+        Map<Integer, RestaurantMenuProductDTO> productMap = productsDetail.stream()
+                .collect(Collectors.toMap(RestaurantMenuProductDTO::id, p -> p));
+
+
+        return menus.stream().map(menu -> {
+
+            List<MenuDTO.ProductDTO> productsForThisMenu = menuProducts.stream()
+                    .filter(mp -> mp.getMenu().getId().equals(menu.getId()))
+                    .map(mp -> {
+
+                        var prod = productMap.get(mp.getProductTmplId());
+
+                        return MenuDTO.ProductDTO.builder()
+                                .id(mp.getId())
+                                .name(prod.name())
+                                .description(prod.description())
+                                .listPrice(prod.listPrice())
+                                .pictureUrl(prod.pictureUrl())
+                                .build();
+                    })
+                    .filter(Objects::nonNull)
+                    .toList();
+
+            return MenuDTO.builder()
+                    .id(menu.getId())
+                    .name(menu.getName())
+                    .sequence(menu.getSequence())
+                    .available(menu.isAvailable())
+                    .products(productsForThisMenu)
+                    .build();
+        }).toList();
     }
 
 
