@@ -101,6 +101,8 @@ public class MenuService {
 
                         var prod = productMap.get(mp.getProductTmplId());
 
+                        if (prod == null) return null;
+
                         return MenuDTO.ProductDTO.builder()
                                 .id(mp.getId())
                                 .productTmplId(mp.getProductTmplId())
