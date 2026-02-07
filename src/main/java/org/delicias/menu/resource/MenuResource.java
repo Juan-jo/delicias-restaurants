@@ -50,6 +50,18 @@ public class MenuResource {
         ).build();
     }
 
+    @GET
+    @Path("/{menuId}")
+    public Response findMenuById(
+            @PathParam("restaurantId") Integer restaurantId,
+            @PathParam("menuId") Integer menuId
+    ) {
+
+        return Response.ok(
+                service.findById(menuId)
+        ).build();
+    }
+
 
     @DELETE
     @Path("/{menuId}")

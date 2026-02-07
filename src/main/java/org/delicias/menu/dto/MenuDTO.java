@@ -29,6 +29,7 @@ public record MenuDTO(
         @Builder
         public record ProductDTO(
                 Integer id,
+                Integer productTmplId,
                 String name,
                 String description,
                 String pictureUrl,

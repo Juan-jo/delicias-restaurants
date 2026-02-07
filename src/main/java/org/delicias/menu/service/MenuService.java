@@ -57,6 +57,22 @@ public class MenuService {
         entity.setAvailable(req.available());
     }
 
+    public MenuDTO findById(Integer menuId) {
+
+        var entity = repository.findById(menuId);
+
+        if (entity == null) {
+            throw new NotFoundException("Menu Not Found");
+        }
+
+        return MenuDTO.builder()
+                .id(entity.getId())
+                .name(entity.getName())
+                .sequence(entity.getSequence())
+                .available(entity.isAvailable())
+                .build();
+    }
+
     public List<MenuDTO> findByRestaurant(Integer restaurantTmplId) {
 
         List<RestaurantMenu> menus = repository.findByRestaurantTmplId(restaurantTmplId);
@@ -87,6 +103,7 @@ public class MenuService {
 
                         return MenuDTO.ProductDTO.builder()
                                 .id(mp.getId())
+                                .productTmplId(mp.getProductTmplId())
                                 .name(prod.name())
                                 .description(prod.description())
                                 .listPrice(prod.listPrice())
