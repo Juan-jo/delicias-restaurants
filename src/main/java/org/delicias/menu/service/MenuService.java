@@ -4,7 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
-import org.delicias.common.dto.RestaurantMenuProductDTO;
+import org.delicias.common.dto.ProductResumeDTO;
 import org.delicias.menu.domain.model.RestaurantMenu;
 import org.delicias.menu.domain.repository.MenuRepository;
 import org.delicias.menu.dto.MenuDTO;
@@ -85,12 +85,12 @@ public class MenuService {
 
         var productsId = menuProducts.stream().map(MenuProduct::getProductTmplId).distinct().toList();
 
-        List<RestaurantMenuProductDTO> productsDetail = productClient.getProductsByIds(
+        List<ProductResumeDTO> productsDetail = productClient.getProductsByIds(
                 productsId
         );
 
-        Map<Integer, RestaurantMenuProductDTO> productMap = productsDetail.stream()
-                .collect(Collectors.toMap(RestaurantMenuProductDTO::id, p -> p));
+        Map<Integer, ProductResumeDTO> productMap = productsDetail.stream()
+                .collect(Collectors.toMap(ProductResumeDTO::id, p -> p));
 
 
         return menus.stream().map(menu -> {
@@ -110,6 +110,7 @@ public class MenuService {
                                 .description(prod.description())
                                 .listPrice(prod.listPrice())
                                 .pictureUrl(prod.pictureUrl())
+                                .sequence(mp.getSequence())
                                 .build();
                     })
                     .filter(Objects::nonNull)

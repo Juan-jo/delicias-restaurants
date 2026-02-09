@@ -11,6 +11,8 @@ import org.delicias.common.validation.OnCreate;
 import org.delicias.menu_products.dto.CreateMenuProductDTO;
 import org.delicias.menu_products.service.MenuProductService;
 
+import java.util.Map;
+
 @Path("/api/restaurants/{restaurantId}/menus/{menuId}/products")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
@@ -41,5 +43,31 @@ public class MenuProductResource {
         service.deleteById(menuProductId);
 
         return Response.noContent().build();
+    }
+
+    @GET
+    @Path("/{menuProductId}")
+    public Response getById(
+            @PathParam("restaurantId") Integer restaurantId,
+            @PathParam("menuId") Integer menuId,
+            @PathParam("menuProductId") Integer menuProductId
+    ) {
+
+        return Response.ok(
+                service.findById(menuProductId)
+        ).build();
+    }
+
+    @PATCH
+    @Path("/{menuProductId}")
+    public Response patch(
+            @PathParam("restaurantId") Integer restaurantId,
+            @PathParam("menuId") Integer menuId,
+            @PathParam("menuProductId") Integer menuProductId,
+            Map<String, Object> data
+    ) {
+
+        service.patch(menuProductId, data);
+        return Response.ok().build();
     }
 }

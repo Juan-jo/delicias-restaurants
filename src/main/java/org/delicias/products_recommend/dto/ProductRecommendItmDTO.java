@@ -2,10 +2,15 @@ package org.delicias.products_recommend.dto;
 
 import lombok.Builder;
 
+import java.math.BigDecimal;
+
 @Builder
 public record ProductRecommendItmDTO(
         Integer id,
-        String productName,
-        String productImageUrl,
+        Integer productTmplId,
+        String name,
+        String description,
+        BigDecimal listPrice,
+        String pictureUrl,
         Short sequence
 ) { }

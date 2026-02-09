@@ -10,6 +10,8 @@ import org.delicias.common.validation.OnCreate;
 import org.delicias.products_recommend.dto.CreateProductRecommendDTO;
 import org.delicias.products_recommend.service.ProductRecommendService;
 
+import java.util.Map;
+
 
 @Path("/api/restaurants/{restaurantId}/recommended")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -42,11 +44,34 @@ public class ProductRecommendResource {
     }
 
     @GET
+    @Path("/{productRecommendedId}")
+    public Response getById(
+            @PathParam("restaurantId") Integer restaurantId,
+            @PathParam("productRecommendedId") Integer productRecommendedId) {
+
+        return Response.ok(
+                service.findById(productRecommendedId)
+        ).build();
+    }
+
+    @GET
     public Response recommendByRestaurantTmpl(
             @PathParam("restaurantId") Integer restaurantId) {
 
         return Response.ok(
-                service.findByRestaurantTmplId(restaurantId)
+                service.findByRestaurant(restaurantId)
         ).build();
+    }
+
+    @PATCH
+    @Path("/{productRecommendedId}")
+    public Response patch(
+            @PathParam("restaurantId") Integer restaurantId,
+            @PathParam("productRecommendedId") Integer productRecommendedId,
+            Map<String, Object> data
+    ) {
+
+        service.patch(productRecommendedId, data);
+        return Response.ok().build();
     }
 }

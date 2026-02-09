@@ -33,6 +33,7 @@ public record MenuDTO(
                 String name,
                 String description,
                 String pictureUrl,
-                BigDecimal listPrice
+                BigDecimal listPrice,
+                Short sequence
         ) {}
 }
