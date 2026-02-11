@@ -17,6 +17,7 @@ import org.delicias.restaurant.service.RestaurantTemplateService;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 @Authenticated
@@ -27,6 +28,18 @@ public class RestaurantTemplateResource {
 
     @Inject
     RestaurantTemplateService service;
+
+
+    @GET
+    @Path("/batch")
+    public Response getByBatch(
+            @QueryParam("ids") List<Integer> ids
+    ) {
+
+        return Response.ok(
+                service.findByIds(ids)
+        ).build();
+    }
 
     @POST
     public Response create(

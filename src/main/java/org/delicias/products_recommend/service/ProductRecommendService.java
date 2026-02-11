@@ -6,7 +6,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
-import org.delicias.common.dto.ProductResumeDTO;
+import org.delicias.common.dto.product.ProductResumeDTO;
 import org.delicias.products_recommend.domain.model.ProductRecommend;
 import org.delicias.products_recommend.domain.repository.ProductRecommendRepository;
 import org.delicias.products_recommend.dto.CreateProductRecommendDTO;

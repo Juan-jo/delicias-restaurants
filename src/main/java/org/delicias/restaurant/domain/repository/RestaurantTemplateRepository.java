@@ -49,4 +49,9 @@ public class RestaurantTemplateRepository implements PanacheRepositoryBase<Resta
                 "%" + name + "%"
         );
     }
+
+    public List<RestaurantTemplate> findByIds(List<Integer> ids) {
+        return find("id in ?1", ids).list();
+    }
+
 }

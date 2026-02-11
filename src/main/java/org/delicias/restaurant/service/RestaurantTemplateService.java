@@ -5,6 +5,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
 import org.delicias.common.dto.PagedResult;
+import org.delicias.common.dto.restaurant.RestaurantResumeDTO;
 import org.delicias.restaurant.domain.model.RestaurantTemplate;
 import org.delicias.restaurant.domain.repository.RestaurantTemplateRepository;
 import org.delicias.restaurant.dto.RestaurantFilterItemDTO;
@@ -141,6 +142,19 @@ public class RestaurantTemplateService {
         restaurantTemplate.setImageCover(logoUrl);
 
         return Map.of("picture", logoUrl);
+    }
+
+    public List<RestaurantResumeDTO> findByIds(List<Integer> ids) {
+
+        return repository.findByIds(ids)
+                .stream()
+                .map(it -> RestaurantResumeDTO.builder()
+                        .id(it.getId())
+                        .name(it.getName())
+                        .description(it.getDescription())
+                        .logoUrl(Optional.ofNullable(it.getImageLogo())
+                                .orElse(defaultLogo))
+                        .build()).toList();
     }
 
 

@@ -4,7 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
-import org.delicias.common.dto.ProductResumeDTO;
+import org.delicias.common.dto.product.ProductResumeDTO;
 import org.delicias.menu.domain.model.RestaurantMenu;
 import org.delicias.menu.domain.repository.MenuRepository;
 import org.delicias.menu.dto.MenuDTO;
