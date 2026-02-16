@@ -6,6 +6,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
+import org.delicias.common.dto.PagedResult;
 import org.delicias.common.dto.product.ProductResumeDTO;
 import org.delicias.products_recommend.domain.model.ProductRecommend;
 import org.delicias.products_recommend.domain.repository.ProductRecommendRepository;
@@ -102,12 +103,20 @@ public class ProductRecommendService {
 
     }
 
-    public List<ProductRecommendItmDTO> findByRestaurant(Integer restaurantTmplId) {
+    public PagedResult<ProductRecommendItmDTO> findByRestaurant(
+            Integer restaurantTmplId, Integer page, Integer size) {
 
-        var recommends = repository.findByRestaurantTmplId(restaurantTmplId);
+        var recommends = repository.findByRestaurant(restaurantTmplId, page, size);
 
-        if (recommends.isEmpty()) {
-            return List.of();
+        long total = repository.countByRestaurant(restaurantTmplId);
+
+        if (total == 0 || recommends.isEmpty()) {
+            return new PagedResult<>(
+                    List.of(),
+                    total,
+                    page,
+                    size
+            );
         }
 
         var productsId = recommends.stream().map(ProductRecommend::getProductTmplId).distinct().toList();
@@ -119,7 +128,7 @@ public class ProductRecommendService {
         Map<Integer, ProductResumeDTO> productMap = products.stream()
                 .collect(Collectors.toMap(ProductResumeDTO::id, p -> p));
 
-        return recommends
+        var filtered = recommends
                 .stream().map(mp -> {
 
                     var prod = productMap.get(mp.getProductTmplId());
@@ -139,6 +148,13 @@ public class ProductRecommendService {
                 })
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
+
+        return new PagedResult<>(
+                filtered,
+                total,
+                page,
+                size
+        );
     }
 
 }

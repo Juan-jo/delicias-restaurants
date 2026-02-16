@@ -12,7 +12,7 @@ import org.delicias.common.validation.OnCreate;
 import org.delicias.common.validation.OnFilter;
 import org.delicias.common.validation.OnUpdate;
 import org.delicias.restaurant.dto.RestaurantFilterReqDTO;
-import org.delicias.restaurant.dto.RestaurantTemplateDTO;
+import org.delicias.restaurant.dto.RestaurantTemplateSummaryDTO;
 import org.delicias.restaurant.service.RestaurantTemplateService;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
@@ -43,7 +43,7 @@ public class RestaurantTemplateResource {
 
     @POST
     public Response create(
-            @Valid @ConvertGroup(to = OnCreate.class) RestaurantTemplateDTO req) {
+            @Valid @ConvertGroup(to = OnCreate.class) RestaurantTemplateSummaryDTO req) {
 
         service.create(req);
 
@@ -52,7 +52,7 @@ public class RestaurantTemplateResource {
 
     @PUT
     public Response update(
-            @Valid @ConvertGroup(to = OnUpdate.class) RestaurantTemplateDTO req) {
+            @Valid @ConvertGroup(to = OnUpdate.class) RestaurantTemplateSummaryDTO req) {
 
         service.update(req);
 
@@ -61,10 +61,16 @@ public class RestaurantTemplateResource {
 
     @GET
     @Path("/{id}")
-    public Response findById(@PathParam("id") Integer id) {
+    public Response findById(
+            @PathParam("id") Integer id,
+            @QueryParam("view") @DefaultValue("summary") String view
+    ) {
 
-        var response = service.findById(id);
-        return Response.ok(response).build();
+        Object result = view.equalsIgnoreCase("full")
+                ? service.findFullById(id)
+                : service.findSummaryById(id);
+
+        return Response.ok(result).build();
     }
 
     @DELETE

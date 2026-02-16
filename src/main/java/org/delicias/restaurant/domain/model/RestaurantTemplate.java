@@ -2,7 +2,9 @@ package org.delicias.restaurant.domain.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.delicias.restaurant.dto.RestaurantTemplateDTO;
+import org.delicias.restaurant.dto.RestaurantTemplateSummaryDTO;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 
 import java.time.LocalDateTime;
@@ -50,28 +52,18 @@ public class RestaurantTemplate {
     @Column(name = "updated_at", insertable = false, updatable = false)
     private LocalDateTime updatedAt;
 
-    /*@OneToMany(mappedBy = "restaurantTmpl")
-    @OrderBy("id")
-    private Set<RestaurantScheduled> schedules;*/
 
-    /*@OneToMany(mappedBy = "restaurantTmpl")
-    @OrderBy("sequence")
-    private Set<RestaurantTmplMenu> menus;*/
-
-
-    public void update(RestaurantTemplateDTO templateDTO) {
+    public void update(RestaurantTemplateSummaryDTO templateDTO) {
         this.name = templateDTO.name();
         this.description = templateDTO.description();
         this.phone = templateDTO.phone();
     }
 
-    /*
-
 
     public void updatePosition(double longitude, double latitude) {
         GeometryFactory geometryFactory = new GeometryFactory();
         this.position = geometryFactory.createPoint(new Coordinate(longitude, latitude));
-    }*/
+    }
 
 
     public RestaurantTemplate(Integer id) {

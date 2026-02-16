@@ -8,9 +8,7 @@ import org.delicias.common.dto.PagedResult;
 import org.delicias.common.dto.restaurant.RestaurantResumeDTO;
 import org.delicias.restaurant.domain.model.RestaurantTemplate;
 import org.delicias.restaurant.domain.repository.RestaurantTemplateRepository;
-import org.delicias.restaurant.dto.RestaurantFilterItemDTO;
-import org.delicias.restaurant.dto.RestaurantFilterReqDTO;
-import org.delicias.restaurant.dto.RestaurantTemplateDTO;
+import org.delicias.restaurant.dto.*;
 import org.delicias.supabase.SupabaseStorageService;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
@@ -34,7 +32,7 @@ public class RestaurantTemplateService {
     String defaultLogo;
 
     @Transactional
-    public void create(RestaurantTemplateDTO templateDTO) {
+    public void create(RestaurantTemplateSummaryDTO templateDTO) {
 
         RestaurantTemplate restaurantTemplate = RestaurantTemplate.builder()
                 .name(templateDTO.name())
@@ -46,7 +44,7 @@ public class RestaurantTemplateService {
     }
 
     @Transactional
-    public void update(RestaurantTemplateDTO templateDTO) {
+    public void update(RestaurantTemplateSummaryDTO templateDTO) {
 
         RestaurantTemplate restaurantTemplate = repository.findById(templateDTO.id());
 
@@ -57,7 +55,18 @@ public class RestaurantTemplateService {
         restaurantTemplate.update(templateDTO);
     }
 
-    public RestaurantTemplateDTO findById(Integer id) {
+    public RestaurantTemplateSummaryDTO findSummaryById(Integer id) {
+
+        RestaurantTemplate restaurantTemplate = repository.findById(id);
+
+        if(restaurantTemplate == null) {
+            throw new NotFoundException("Restaurant Tmpl Not Found");
+        }
+
+        return modelToRestaurantTemplateSummaryDTO(restaurantTemplate);
+    }
+
+    public RestaurantTemplateDTO findFullById(Integer id) {
 
         RestaurantTemplate restaurantTemplate = repository.findById(id);
 
@@ -166,9 +175,9 @@ public class RestaurantTemplateService {
 
 
 
-    private RestaurantTemplateDTO modelToRestaurantTemplateDTO(RestaurantTemplate template) {
+    private RestaurantTemplateSummaryDTO modelToRestaurantTemplateSummaryDTO(RestaurantTemplate template) {
 
-        return RestaurantTemplateDTO.builder()
+        return RestaurantTemplateSummaryDTO.builder()
                 .id(template.getId())
                 .name(template.getName())
                 .description(template.getDescription())
@@ -179,5 +188,28 @@ public class RestaurantTemplateService {
                 )
                 .build();
     }
+
+
+    private RestaurantTemplateDTO modelToRestaurantTemplateDTO(RestaurantTemplate template) {
+
+        return RestaurantTemplateDTO.builder()
+                .id(template.getId())
+                .name(template.getName())
+                .description(template.getDescription())
+                .phone(template.getPhone())
+                .address(template.getAddress())
+                .logoPicture(
+                        Optional.ofNullable(template.getImageLogo())
+                                .orElse(defaultLogo)
+                )
+                .coverPicture(
+                        Optional.ofNullable(template.getImageCover())
+                                .orElse(defaultLogo)
+                )
+                .build();
+    }
+
+
+
 
 }

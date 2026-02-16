@@ -4,6 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
+import org.delicias.common.dto.PagedResult;
 import org.delicias.common.dto.product.ProductResumeDTO;
 import org.delicias.menu.domain.model.RestaurantMenu;
 import org.delicias.menu.domain.repository.MenuRepository;
@@ -73,9 +74,20 @@ public class MenuService {
                 .build();
     }
 
-    public List<MenuDTO> findByRestaurant(Integer restaurantTmplId) {
+    public PagedResult<MenuDTO> findByRestaurant(Integer restaurantTmplId, Integer page, Integer size) {
 
-        List<RestaurantMenu> menus = repository.findByRestaurantTmplId(restaurantTmplId);
+        List<RestaurantMenu> menus = repository.findByRestaurantTmplId(restaurantTmplId, page, size);
+
+        long total = repository.countByRestaurant(restaurantTmplId);
+
+        if (total == 0 || menus.isEmpty()) {
+            return new PagedResult<>(
+                    List.of(),
+                    total,
+                    page,
+                    size
+            );
+        }
 
         var menusId = menus.stream().map(RestaurantMenu::getId).toList();
 
@@ -92,8 +104,7 @@ public class MenuService {
         Map<Integer, ProductResumeDTO> productMap = productsDetail.stream()
                 .collect(Collectors.toMap(ProductResumeDTO::id, p -> p));
 
-
-        return menus.stream().map(menu -> {
+        var filtered = menus.stream().map(menu -> {
 
             List<MenuDTO.ProductDTO> productsForThisMenu = menuProducts.stream()
                     .filter(mp -> mp.getMenu().getId().equals(menu.getId()))
@@ -124,6 +135,13 @@ public class MenuService {
                     .products(productsForThisMenu)
                     .build();
         }).toList();
+
+        return new PagedResult<>(
+                filtered,
+                total,
+                page,
+                size
+        );
     }
 
 

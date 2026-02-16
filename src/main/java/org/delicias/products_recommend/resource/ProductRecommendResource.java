@@ -56,10 +56,13 @@ public class ProductRecommendResource {
 
     @GET
     public Response recommendByRestaurantTmpl(
-            @PathParam("restaurantId") Integer restaurantId) {
+            @PathParam("restaurantId") Integer restaurantId,
+            @QueryParam("page") @DefaultValue("0") int page,
+            @QueryParam("size") @DefaultValue("5") int size
+    ) {
 
         return Response.ok(
-                service.findByRestaurant(restaurantId)
+                service.findByRestaurant(restaurantId, page , size)
         ).build();
     }
 
