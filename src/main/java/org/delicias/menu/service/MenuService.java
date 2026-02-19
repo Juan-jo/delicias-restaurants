@@ -95,7 +95,9 @@ public class MenuService {
                 menusId
         );
 
-        var productsId = menuProducts.stream().map(MenuProduct::getProductTmplId).distinct().toList();
+        var productsId = menuProducts.stream()
+                .map(MenuProduct::getProductTmplId)
+                .collect(Collectors.toSet());
 
         List<ProductResumeDTO> productsDetail = productClient.getProductsByIds(
                 productsId

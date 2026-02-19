@@ -17,6 +17,7 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @ApplicationScoped
 public class MenuProductService {
@@ -48,7 +49,7 @@ public class MenuProductService {
         }
 
         ProductResumeDTO product = productClient.getProductsByIds(
-                        List.of(entity.getProductTmplId())
+                        Set.of(entity.getProductTmplId())
                 )
                 .stream()
                 .findFirst()

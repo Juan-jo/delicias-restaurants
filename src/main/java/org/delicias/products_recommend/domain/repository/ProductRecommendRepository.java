@@ -24,6 +24,13 @@ public class ProductRecommendRepository implements PanacheRepositoryBase<Product
                 .list();
     }
 
+    public List<ProductRecommend> findByRestaurant(
+            Integer restaurantTmplId
+    ) {
+        return find(queryFilterByRestaurant, Sort.ascending("sequence"), restaurantTmplId)
+                .list();
+    }
+
     public long countByRestaurant(Integer restaurantTmplId) {
         return count(queryFilterByRestaurant, restaurantTmplId);
     }

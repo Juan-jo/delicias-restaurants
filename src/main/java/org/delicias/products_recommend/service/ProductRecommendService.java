@@ -20,6 +20,7 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
@@ -64,7 +65,7 @@ public class ProductRecommendService {
         }
 
         ProductResumeDTO product = productClient.getProductsByIds(
-                        List.of(entity.getProductTmplId())
+                        Set.of(entity.getProductTmplId())
                 )
                 .stream()
                 .findFirst()
@@ -119,7 +120,8 @@ public class ProductRecommendService {
             );
         }
 
-        var productsId = recommends.stream().map(ProductRecommend::getProductTmplId).distinct().toList();
+        var productsId = recommends.stream().map(ProductRecommend::getProductTmplId)
+                .collect(Collectors.toSet());
 
         List<ProductResumeDTO> products = productClient.getProductsByIds(
                 productsId

@@ -24,6 +24,14 @@ public class MenuRepository implements PanacheRepositoryBase<RestaurantMenu, Int
                 .list();
     }
 
+    public List<RestaurantMenu> findByRestaurantTmplId(
+            Integer restaurantTmplId
+    ) {
+
+        return find(queryFilterByRestaurant, Sort.ascending("sequence"), restaurantTmplId)
+                .list();
+    }
+
     public long countByRestaurant(Integer restaurantTmplId) {
         return count(queryFilterByRestaurant, restaurantTmplId);
     }
