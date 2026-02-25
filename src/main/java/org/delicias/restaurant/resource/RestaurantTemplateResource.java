@@ -30,6 +30,7 @@ public class RestaurantTemplateResource {
     RestaurantTemplateService service;
 
 
+    // TODO For Restaurant Client API
     @GET
     @Path("/batch")
     public Response getByBatch(
@@ -38,6 +39,18 @@ public class RestaurantTemplateResource {
 
         return Response.ok(
                 service.findByIds(ids)
+        ).build();
+    }
+
+    // TODO For Restaurant Client API
+    @GET
+    @Path("/{restaurantTmplId}/latlng")
+    public Response getLatLng(
+            @PathParam("restaurantTmplId") Integer restaurantTmplId
+    ) {
+
+        return Response.ok(
+                service.getLatLng(restaurantTmplId)
         ).build();
     }
 

@@ -75,7 +75,7 @@ public class RestaurantDetailService {
 
         return RestaurantDetailDTO.builder()
                 .id(restaurant.getId())
-                .name(restaurant.getImageCover())
+                .name(restaurant.getName())
                 .imageCoverUrl(Optional.ofNullable(restaurant.getImageCover()).orElse(defaultLogo))
                 .info(RestaurantDetailDTO.RestaurantInfo.builder()
                         .imageLogoUrl(Optional.ofNullable(restaurant.getImageLogo()).orElse(defaultLogo))
@@ -114,6 +114,7 @@ public class RestaurantDetailService {
                                                     .picture(product.pictureUrl())
                                                     .name(product.name())
                                                     .priceList(product.listPrice())
+                                                    .description(product.description())
                                                     .build();
 
                                         }).filter(Objects::nonNull).toList()

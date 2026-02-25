@@ -5,6 +5,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
 import org.delicias.common.dto.PagedResult;
+import org.delicias.common.dto.restaurant.RestaurantLatLngDTO;
 import org.delicias.common.dto.restaurant.RestaurantResumeDTO;
 import org.delicias.restaurant.domain.model.RestaurantTemplate;
 import org.delicias.restaurant.domain.repository.RestaurantTemplateRepository;
@@ -12,6 +13,7 @@ import org.delicias.restaurant.dto.*;
 import org.delicias.supabase.SupabaseStorageService;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
+import org.locationtech.jts.geom.Point;
 
 import java.io.IOException;
 import java.util.List;
@@ -164,6 +166,23 @@ public class RestaurantTemplateService {
                         .logoUrl(Optional.ofNullable(it.getImageLogo())
                                 .orElse(defaultLogo))
                         .build()).toList();
+    }
+
+    public RestaurantLatLngDTO getLatLng(Integer restaurantTmplId) {
+
+        RestaurantTemplate restaurant = repository.findById(restaurantTmplId);
+
+        if(restaurant == null) {
+            throw new NotFoundException("Restaurant Tmpl Not Found");
+        }
+
+        return new RestaurantLatLngDTO(
+                Optional.ofNullable(restaurant.getPosition())
+                        .map(Point::getY).orElse(Double.NaN),
+                Optional.ofNullable(restaurant.getPosition())
+                        .map(Point::getX).orElse(Double.NaN)
+        );
+
     }
 
 
