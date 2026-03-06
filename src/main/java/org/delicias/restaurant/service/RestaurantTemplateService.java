@@ -162,9 +162,10 @@ public class RestaurantTemplateService {
                 .map(it -> RestaurantResumeDTO.builder()
                         .id(it.getId())
                         .name(it.getName())
-                        .description(it.getDescription())
+                        .description(Optional.ofNullable(it.getDescription()).orElse(""))
                         .logoUrl(Optional.ofNullable(it.getImageLogo())
                                 .orElse(defaultLogo))
+                        .address(Optional.ofNullable(it.getAddress()).orElse("Desconocido"))
                         .build()).toList();
     }
 
