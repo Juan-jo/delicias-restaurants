@@ -54,6 +54,20 @@ public class RestaurantTemplateResource {
         ).build();
     }
 
+    // TODO For Core Client API
+    @GET
+    @Path("/{restaurantTmplId}/fields")
+    public Response getLatLng(
+            @PathParam("restaurantTmplId") Integer restaurantTmplId,
+            @QueryParam("fields") String fields
+    ) {
+
+        return Response.ok(
+                service.findWithFields(restaurantTmplId, fields)
+        ).build();
+    }
+
+
     @POST
     public Response create(
             @Valid @ConvertGroup(to = OnCreate.class) RestaurantTemplateSummaryDTO req) {

@@ -16,9 +16,7 @@ import org.jboss.resteasy.reactive.multipart.FileUpload;
 import org.locationtech.jts.geom.Point;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 
 @ApplicationScoped
@@ -184,6 +182,53 @@ public class RestaurantTemplateService {
                         .map(Point::getX).orElse(Double.NaN)
         );
 
+    }
+
+    public Map<String, Object> findWithFields(Integer restaurantTmplId, String fields) {
+
+        Set<String> fieldSet = fields != null
+                ? new HashSet<>(Arrays.asList(fields.split(",")))
+                : null;
+
+        RestaurantTemplate restaurantTemplate = repository.findById(restaurantTmplId);
+
+        if(restaurantTemplate == null) {
+            throw new NotFoundException("Restaurant Tmpl Not Found");
+        }
+
+        return filterFields(restaurantTemplate, fieldSet);
+    }
+
+    private Map<String, Object> filterFields(RestaurantTemplate r, Set<String> fields) {
+        Map<String, Object> map = new HashMap<>();
+
+        if(fields != null) {
+
+            if (fields.contains("id"))
+                map.put("id", r.getId());
+
+            if (fields.contains("name"))
+                map.put("name", r.getName());
+
+            if (fields.contains("latitude"))
+                map.put("latitude", Optional.ofNullable(r.getPosition())
+                        .map(Point::getY).orElse(Double.NaN));
+
+            if (fields.contains("longitude"))
+                map.put("longitude", Optional.ofNullable(r.getPosition())
+                        .map(Point::getX).orElse(Double.NaN));
+
+            if (fields.contains("address"))
+                map.put("address", r.getAddress());
+
+            if (fields.contains("photo"))
+                map.put("photo", r.getImageLogo());
+
+            if (fields.contains("cover"))
+                map.put("cover", r.getImageCover());
+        }
+
+        return map;
     }
 
 
