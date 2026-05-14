@@ -278,3 +278,60 @@ databaseChangeLog:
             referencedColumnNames: id
             referencedTableName: restaurant_template
             validate: true
+  - changeSet:
+      id: 27032024_07
+      author: jdev
+      changes:
+        - createSequence:
+            cycle: false
+            dataType: INTEGER
+            startValue: 1
+            incrementBy: 1
+            minValue: 1
+            maxValue: 2147483647
+            schemaName: public
+            sequenceName: user_id_seq
+        - createTable:
+            tableName: restaurant_users
+            columns:
+              - column:
+                  name: id
+                  type: INTEGER
+                  remarks: ID Unique, PK
+                  defaultValueComputed: nextval('user_id_seq')
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_user_id
+              - column:
+                  name: user_uuid
+                  type: UUID
+                  remarks: Keycloak User ID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: restaurant_tmpl_id
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(50)
+              - column:
+                  name: last_name
+                  type: VARCHAR(100)
+              - column:
+                  name: username
+                  type: VARCHAR(50)
+              - column:
+                  name: email
+                  type: VARCHAR(75)
+              - column:
+                  name: picture_url
+                  type: VARCHAR
+        - addUniqueConstraint:
+            columnNames: username,restaurant_tmpl_id
+            constraintName: unique_restaurant_users_username
+            schemaName: public
+            tableName: restaurant_users
+            validate: true
