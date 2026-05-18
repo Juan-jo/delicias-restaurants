@@ -12,10 +12,10 @@ import org.delicias.menu_products.domain.model.MenuProduct;
 import org.delicias.menu_products.domain.repository.MenuProductRepository;
 import org.delicias.menu_products.dto.CreateMenuProductDTO;
 import org.delicias.menu_products.dto.MenuProductDTO;
+import org.delicias.minio.MinioStorageService;
 import org.delicias.rest.clients.ProductClient;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -28,6 +28,9 @@ public class MenuProductService {
     @Inject
     @RestClient
     ProductClient productClient;
+
+    @Inject
+    MinioStorageService minioStorageService;
 
     @Transactional
     public void create(Integer menuId, CreateMenuProductDTO req) {
@@ -62,7 +65,9 @@ public class MenuProductService {
                         .name(product.name())
                         .description(product.description())
                         .listPrice(product.listPrice())
-                        .picture(product.pictureUrl())
+                        .picture(
+                                minioStorageService.thumbnailUrl(product.pictureUrl())
+                        )
                         .build())
                 .build();
     }

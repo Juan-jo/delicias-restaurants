@@ -11,6 +11,7 @@ import org.delicias.menu.domain.repository.MenuRepository;
 import org.delicias.menu.dto.MenuDTO;
 import org.delicias.menu_products.domain.model.MenuProduct;
 import org.delicias.menu_products.domain.repository.MenuProductRepository;
+import org.delicias.minio.MinioStorageService;
 import org.delicias.rest.clients.ProductClient;
 import org.delicias.restaurant.domain.model.RestaurantTemplate;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
@@ -32,6 +33,9 @@ public class MenuService {
     @Inject
     @RestClient
     ProductClient productClient;
+
+    @Inject
+    MinioStorageService minioStorageService;
 
     @Transactional
     public void create(Integer restaurantTmplId, MenuDTO req) {
@@ -122,7 +126,9 @@ public class MenuService {
                                 .name(prod.name())
                                 .description(prod.description())
                                 .listPrice(prod.listPrice())
-                                .pictureUrl(prod.pictureUrl())
+                                .pictureUrl(
+                                        minioStorageService.thumbnailUrl(prod.pictureUrl())
+                                )
                                 .sequence(mp.getSequence())
                                 .build();
                     })

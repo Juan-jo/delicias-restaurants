@@ -7,6 +7,7 @@ import org.delicias.common.dto.product.ProductResumeDTO;
 import org.delicias.menu.domain.repository.MenuRepository;
 import org.delicias.menu_products.domain.model.MenuProduct;
 import org.delicias.menu_products.domain.repository.MenuProductRepository;
+import org.delicias.minio.MinioStorageService;
 import org.delicias.mobile.dto.RestaurantDetailDTO;
 import org.delicias.products_recommend.domain.model.ProductRecommend;
 import org.delicias.products_recommend.domain.repository.ProductRecommendRepository;
@@ -43,6 +44,8 @@ public class RestaurantDetailService {
     @Inject
     ProductRecommendRepository recommendRepository;
 
+    @Inject
+    MinioStorageService minioStorageService;
 
     @Inject
     @RestClient
@@ -76,9 +79,13 @@ public class RestaurantDetailService {
         return RestaurantDetailDTO.builder()
                 .id(restaurant.getId())
                 .name(restaurant.getName())
-                .imageCoverUrl(Optional.ofNullable(restaurant.getImageCover()).orElse(defaultLogo))
+                .imageCoverUrl(minioStorageService.imgBannerUrl(
+                        Optional.ofNullable(restaurant.getImageCover()).orElse(defaultLogo)
+                ))
+
                 .info(RestaurantDetailDTO.RestaurantInfo.builder()
-                        .imageLogoUrl(Optional.ofNullable(restaurant.getImageLogo()).orElse(defaultLogo))
+                        .imageLogoUrl(minioStorageService.thumbnailUrl(
+                                        Optional.ofNullable(restaurant.getImageLogo()).orElse(defaultLogo)))
                         .hourStart(scheduled.getStartTime())
                         .hourEnd(scheduled.getEndTime())
                         .available(timeNow.isAfter(scheduled.getStartTime()) && timeNow.isBefore(scheduled.getEndTime()))
@@ -93,7 +100,9 @@ public class RestaurantDetailService {
 
                                     return RestaurantDetailDTO.RecommendedItem.builder()
                                             .id(product.id())
-                                            .picture(product.pictureUrl())
+                                            .picture(minioStorageService.thumbnailUrl(
+                                                    product.pictureUrl()
+                                            ))
                                             .name(product.name())
                                             .priceList(product.listPrice())
                                             .build();
@@ -111,7 +120,9 @@ public class RestaurantDetailService {
 
                                             return RestaurantDetailDTO.ProductMenu.builder()
                                                     .id(product.id())
-                                                    .picture(product.pictureUrl())
+                                                    .picture(minioStorageService.thumbnailUrl(
+                                                            product.pictureUrl()
+                                                    ))
                                                     .name(product.name())
                                                     .priceList(product.listPrice())
                                                     .description(product.description())

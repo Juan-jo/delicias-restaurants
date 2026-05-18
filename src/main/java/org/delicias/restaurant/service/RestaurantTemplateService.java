@@ -7,10 +7,13 @@ import jakarta.ws.rs.NotFoundException;
 import org.delicias.common.dto.PagedResult;
 import org.delicias.common.dto.restaurant.RestaurantLatLngDTO;
 import org.delicias.common.dto.restaurant.RestaurantResumeDTO;
+import org.delicias.minio.MinioStorageService;
 import org.delicias.restaurant.domain.model.RestaurantTemplate;
 import org.delicias.restaurant.domain.repository.RestaurantTemplateRepository;
-import org.delicias.restaurant.dto.*;
-import org.delicias.supabase.SupabaseStorageService;
+import org.delicias.restaurant.dto.RestaurantFilterItemDTO;
+import org.delicias.restaurant.dto.RestaurantFilterReqDTO;
+import org.delicias.restaurant.dto.RestaurantTemplateDTO;
+import org.delicias.restaurant.dto.RestaurantTemplateSummaryDTO;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 import org.locationtech.jts.geom.Point;
@@ -23,7 +26,7 @@ import java.util.*;
 public class RestaurantTemplateService {
 
     @Inject
-    SupabaseStorageService storageService;
+    MinioStorageService minioStorageService;
 
     @Inject
     RestaurantTemplateRepository repository;
@@ -100,7 +103,7 @@ public class RestaurantTemplateService {
                 .stream().map(it -> RestaurantFilterItemDTO.builder()
                         .id(it.getId())
                         .name(it.getName())
-                        .picture(Optional.ofNullable(it.getImageLogo()).orElse(defaultLogo))
+                        .picture(minioStorageService.logoTableUrl(Optional.ofNullable(it.getImageLogo()).orElse(defaultLogo)))
                         .createdAt(it.getCreatedAt())
                         .updatedAt(it.getUpdatedAt())
                         .build()).toList();
@@ -118,7 +121,7 @@ public class RestaurantTemplateService {
 
 
     @Transactional
-    public Map<String, String> uploadLogo(Integer restaurantTmplId, FileUpload logoFile) throws IOException {
+    public Map<String, String> uploadLogo(Integer restaurantTmplId, FileUpload file) throws IOException {
 
         RestaurantTemplate restaurantTemplate = repository.findById(restaurantTmplId);
 
@@ -126,17 +129,17 @@ public class RestaurantTemplateService {
             throw new NotFoundException("Restaurant Tmpl Not Found");
         }
 
-        String logoUrl = storageService.uploadFile(logoFile);
-
-        deleteCurrentPicture(restaurantTemplate.getImageLogo());
+        String logoUrl = minioStorageService.upload(
+                file
+        );
 
         restaurantTemplate.setImageLogo(logoUrl);
 
-        return Map.of("picture", logoUrl);
+        return Map.of("picture", minioStorageService.detailUrl(logoUrl));
     }
 
     @Transactional
-    public Map<String, String> uploadCover(Integer restaurantTmplId, FileUpload logoFile) throws IOException {
+    public Map<String, String> uploadCover(Integer restaurantTmplId, FileUpload file) throws IOException {
 
         RestaurantTemplate restaurantTemplate = repository.findById(restaurantTmplId);
 
@@ -144,13 +147,11 @@ public class RestaurantTemplateService {
             throw new NotFoundException("Restaurant Tmpl Not Found");
         }
 
-        String logoUrl = storageService.uploadFile(logoFile);
-
-        deleteCurrentPicture(restaurantTemplate.getImageCover());
+        String logoUrl = minioStorageService.upload(file);
 
         restaurantTemplate.setImageCover(logoUrl);
 
-        return Map.of("picture", logoUrl);
+        return Map.of("picture", minioStorageService.imgBannerUrl(logoUrl));
     }
 
     public List<RestaurantResumeDTO> findByIds(List<Integer> ids) {
@@ -161,8 +162,7 @@ public class RestaurantTemplateService {
                         .id(it.getId())
                         .name(it.getName())
                         .description(Optional.ofNullable(it.getDescription()).orElse(""))
-                        .logoUrl(Optional.ofNullable(it.getImageLogo())
-                                .orElse(defaultLogo))
+                        .logoUrl(it.getImageLogo())
                         .address(Optional.ofNullable(it.getAddress()).orElse("Desconocido"))
                         .build()).toList();
     }
@@ -232,11 +232,6 @@ public class RestaurantTemplateService {
     }
 
 
-    private void deleteCurrentPicture(String pictureUrl) {
-        if(Optional.ofNullable(pictureUrl).isPresent()) {
-            storageService.deleteFile(pictureUrl);
-        }
-    }
 
 
 
@@ -248,8 +243,8 @@ public class RestaurantTemplateService {
                 .description(template.getDescription())
                 .phone(template.getPhone())
                 .logoPicture(
-                        Optional.ofNullable(template.getImageLogo())
-                                .orElse(defaultLogo)
+                        minioStorageService.detailUrl(Optional.ofNullable(template.getImageLogo())
+                                .orElse(defaultLogo))
                 )
                 .build();
     }
@@ -263,13 +258,11 @@ public class RestaurantTemplateService {
                 .description(template.getDescription())
                 .phone(template.getPhone())
                 .address(template.getAddress())
-                .logoPicture(
-                        Optional.ofNullable(template.getImageLogo())
-                                .orElse(defaultLogo)
-                )
+                .logoPicture(minioStorageService.thumbnailUrl(Optional.ofNullable(template.getImageLogo())
+                                .orElse(defaultLogo)))
                 .coverPicture(
-                        Optional.ofNullable(template.getImageCover())
-                                .orElse(defaultLogo)
+                        minioStorageService.imgBannerUrl(Optional.ofNullable(template.getImageCover())
+                                .orElse(defaultLogo))
                 )
                 .build();
     }

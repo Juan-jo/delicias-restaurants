@@ -8,6 +8,7 @@ import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
 import org.delicias.common.dto.PagedResult;
 import org.delicias.common.dto.product.ProductResumeDTO;
+import org.delicias.minio.MinioStorageService;
 import org.delicias.products_recommend.domain.model.ProductRecommend;
 import org.delicias.products_recommend.domain.repository.ProductRecommendRepository;
 import org.delicias.products_recommend.dto.CreateProductRecommendDTO;
@@ -32,6 +33,10 @@ public class ProductRecommendService {
     @Inject
     @RestClient
     ProductClient productClient;
+
+    @Inject
+    MinioStorageService minioStorageService;
+
 
     @Transactional
     public void create(Integer restaurantTmplId, CreateProductRecommendDTO req) {
@@ -79,7 +84,7 @@ public class ProductRecommendService {
                         .name(product.name())
                         .description(product.description())
                         .listPrice(product.listPrice())
-                        .picture(product.pictureUrl())
+                        .picture(minioStorageService.thumbnailUrl(product.pictureUrl()))
                         .build())
                 .build();
     }
@@ -143,7 +148,9 @@ public class ProductRecommendService {
                             .name(prod.name())
                             .description(prod.description())
                             .listPrice(prod.listPrice())
-                            .pictureUrl(prod.pictureUrl())
+                            .pictureUrl(
+                                    minioStorageService.thumbnailUrl(prod.pictureUrl())
+                            )
                             .sequence(mp.getSequence())
                             .build();
 
