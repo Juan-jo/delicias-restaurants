@@ -106,6 +106,7 @@ public class RestaurantTemplateService {
                         .picture(minioStorageService.logoTableUrl(Optional.ofNullable(it.getImageLogo()).orElse(defaultLogo)))
                         .createdAt(it.getCreatedAt())
                         .updatedAt(it.getUpdatedAt())
+                        .address(Optional.ofNullable(it.getAddress()).orElse("--"))
                         .build()).toList();
 
         long total = repository.countByName(req.getName());
