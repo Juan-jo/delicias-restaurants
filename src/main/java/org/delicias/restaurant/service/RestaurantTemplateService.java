@@ -103,7 +103,7 @@ public class RestaurantTemplateService {
                 .stream().map(it -> RestaurantFilterItemDTO.builder()
                         .id(it.getId())
                         .name(it.getName())
-                        .picture(minioStorageService.logoTableUrl(Optional.ofNullable(it.getImageLogo()).orElse(defaultLogo)))
+                        .picture(minioStorageService.smallImage(Optional.ofNullable(it.getImageLogo()).orElse(defaultLogo)))
                         .createdAt(it.getCreatedAt())
                         .updatedAt(it.getUpdatedAt())
                         .address(Optional.ofNullable(it.getAddress()).orElse("--"))
@@ -163,7 +163,8 @@ public class RestaurantTemplateService {
                         .id(it.getId())
                         .name(it.getName())
                         .description(Optional.ofNullable(it.getDescription()).orElse(""))
-                        .logoUrl(it.getImageLogo())
+                        .logoUrl(Optional.ofNullable(it.getImageLogo()).orElse(defaultLogo))
+                        .coverUrl(Optional.ofNullable(it.getImageCover()).orElse(defaultLogo))
                         .address(Optional.ofNullable(it.getAddress()).orElse("Desconocido"))
                         .build()).toList();
     }
