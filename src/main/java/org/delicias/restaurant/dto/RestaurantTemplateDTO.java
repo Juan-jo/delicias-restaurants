@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
+import org.delicias.common.dto.restaurant.StoreType;
 import org.delicias.common.validation.OnCreate;
 import org.delicias.common.validation.OnUpdate;
 
@@ -17,5 +18,6 @@ public record RestaurantTemplateDTO(
         String phone,
         String logoPicture,
         String coverPicture,
-        String address
+        String address,
+        StoreType storeType
 ) { }

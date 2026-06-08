@@ -335,3 +335,14 @@ databaseChangeLog:
             schemaName: public
             tableName: restaurant_users
             validate: true
+  - changeSet:
+      id: 27032024_09
+      author: jdev
+      changes:
+        - addColumn:
+            tableName: restaurant_template
+            columns:
+              - column:
+                  name: store_type
+                  type: VARCHAR(50)
+                  defaultValue: 'RESTAURANT'

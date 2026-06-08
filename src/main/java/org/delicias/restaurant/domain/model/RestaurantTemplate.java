@@ -2,6 +2,7 @@ package org.delicias.restaurant.domain.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.delicias.common.dto.restaurant.StoreType;
 import org.delicias.restaurant.dto.RestaurantTemplateSummaryDTO;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -51,6 +52,10 @@ public class RestaurantTemplate {
 
     @Column(name = "updated_at", insertable = false, updatable = false)
     private LocalDateTime updatedAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "store_type")
+    private StoreType storeType;
 
 
     public void update(RestaurantTemplateSummaryDTO templateDTO) {

@@ -41,6 +41,7 @@ public class RestaurantTemplateService {
                 .name(templateDTO.name())
                 .description(templateDTO.description())
                 .phone(templateDTO.phone())
+                .storeType(templateDTO.storeType())
                 .build();
 
         repository.persist(restaurantTemplate);
@@ -104,8 +105,7 @@ public class RestaurantTemplateService {
                         .id(it.getId())
                         .name(it.getName())
                         .picture(minioStorageService.smallImage(Optional.ofNullable(it.getImageLogo()).orElse(defaultLogo)))
-                        .createdAt(it.getCreatedAt())
-                        .updatedAt(it.getUpdatedAt())
+                        .storeType(it.getStoreType().getDescription())
                         .address(Optional.ofNullable(it.getAddress()).orElse("--"))
                         .build()).toList();
 
@@ -248,6 +248,7 @@ public class RestaurantTemplateService {
                         minioStorageService.detailUrl(Optional.ofNullable(template.getImageLogo())
                                 .orElse(defaultLogo))
                 )
+                .storeType(template.getStoreType())
                 .build();
     }
 
@@ -266,6 +267,7 @@ public class RestaurantTemplateService {
                         minioStorageService.imgBannerUrl(Optional.ofNullable(template.getImageCover())
                                 .orElse(defaultLogo))
                 )
+                .storeType(template.getStoreType())
                 .build();
     }
 

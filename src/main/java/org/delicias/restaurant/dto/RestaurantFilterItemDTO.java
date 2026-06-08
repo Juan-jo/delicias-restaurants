@@ -2,7 +2,10 @@ package org.delicias.restaurant.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.Builder;
+import org.delicias.common.dto.restaurant.StoreType;
 
 import java.time.LocalDateTime;
 
@@ -11,10 +14,7 @@ import java.time.LocalDateTime;
 public record RestaurantFilterItemDTO(
         Integer id,
         String name,
-        @JsonFormat(pattern="dd/MM/yyyy HH:mm:ss")
-        LocalDateTime createdAt,
-        @JsonFormat(pattern="dd/MM/yyyy HH:mm:ss")
-        LocalDateTime updatedAt,
         String picture,
-        String address
+        String address,
+        String storeType
 ) { }

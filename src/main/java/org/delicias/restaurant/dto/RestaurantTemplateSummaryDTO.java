@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
+import org.delicias.common.dto.restaurant.StoreType;
 import org.delicias.common.validation.OnCreate;
 import org.delicias.common.validation.OnUpdate;
 
@@ -23,6 +24,9 @@ public record RestaurantTemplateSummaryDTO(
         @Size(max = 15, message = "Not valid phone...", groups = { OnCreate.class, OnUpdate.class})
         String phone,
 
-        String logoPicture
+        String logoPicture,
+
+        @NotNull(message = "id is mandatory", groups = { OnCreate.class})
+        StoreType storeType
 ) {
 }
