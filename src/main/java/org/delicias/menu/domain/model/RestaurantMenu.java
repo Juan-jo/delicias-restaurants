@@ -30,7 +30,7 @@ public class RestaurantMenu {
 
     private String name;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="restaurant_tmpl_id", referencedColumnName = "id")
     private RestaurantTemplate restaurantTmpl;
 

@@ -346,3 +346,48 @@ databaseChangeLog:
                   name: store_type
                   type: VARCHAR(50)
                   defaultValue: 'RESTAURANT'
+  - changeSet:
+      id: 27032024_10
+      author: jdev
+      changes:
+        - createSequence:
+            cycle: false
+            dataType: INTEGER
+            startValue: 1
+            incrementBy: 1
+            minValue: 1
+            maxValue: 2147483647
+            schemaName: public
+            sequenceName: business_category_rel_id_seq
+        - createTable:
+            tableName: business_category_rel
+            columns:
+              - column:
+                  name: id
+                  type: INTEGER
+                  remarks: ID Unique, PK
+                  defaultValueComputed: nextval('business_category_rel_id_seq')
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_business_category_rel_id
+              - column:
+                  name: zone_business_category_id
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+              - column:
+                  name: restaurant_id
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sequence
+                  type: smallint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: active
+                  type: BOOL
+                  constraints:
+                    nullable: false

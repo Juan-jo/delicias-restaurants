@@ -3,6 +3,8 @@ package org.delicias.restaurant.resource;
 import io.quarkus.security.Authenticated;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.groups.ConvertGroup;
 import jakarta.ws.rs.*;
@@ -14,6 +16,7 @@ import org.delicias.common.validation.OnUpdate;
 import org.delicias.restaurant.dto.RestaurantFilterReqDTO;
 import org.delicias.restaurant.dto.RestaurantTemplateSummaryDTO;
 import org.delicias.restaurant.service.RestaurantTemplateService;
+import org.delicias.restaurant.service.SearchRestaurantTmplService;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
 import java.io.IOException;
@@ -28,6 +31,22 @@ public class RestaurantTemplateResource {
 
     @Inject
     RestaurantTemplateService service;
+
+    @Inject
+    SearchRestaurantTmplService searchRestaurantTmplService;
+
+    @GET
+    @Path("/search")
+    public Response searchOption(
+            @QueryParam("name") String name,
+            @QueryParam("page") @DefaultValue("0") @Min(0) int page,
+            @QueryParam("size") @DefaultValue("10") @Min(1) @Max(20) int size
+    ) {
+
+        return Response.ok(
+                searchRestaurantTmplService.search(name, page, size)
+        ).build();
+    }
 
 
     // TODO For Restaurant Client API
