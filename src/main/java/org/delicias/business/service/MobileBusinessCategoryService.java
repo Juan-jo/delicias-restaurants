@@ -6,6 +6,8 @@ import org.delicias.business.domain.model.BusinessCategoryRel;
 import org.delicias.business.dto.MobileBusinessCategDTO;
 import org.delicias.common.dto.PagedResult;
 import org.delicias.minio.MinioStorageService;
+import org.delicias.minio.utils.MinioRS;
+import org.delicias.minio.utils.MinioSize;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.util.Optional;
@@ -36,8 +38,11 @@ public class MobileBusinessCategoryService {
                 paged.data().stream().map(it -> new MobileBusinessCategDTO(
                         it.getRestaurantTmpl().getId(),
                         it.getRestaurantTmpl().getName(),
-                        minioStorageService.fitThumbnailUrl(
-                                Optional.ofNullable(it.getRestaurantTmpl().getImageLogo()).orElse(defaultLogo)
+                        minioStorageService.pictureUrl(
+                                Optional.ofNullable(it.getRestaurantTmpl().getImageLogo()).orElse(defaultLogo),
+                                MinioSize.MEDIUM,
+                                MinioRS.FIT,
+                                (short)70
                         ),
                         Optional.ofNullable(it.getRestaurantTmpl().getAddress()).orElse("--")
                 )).toList(),

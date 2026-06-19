@@ -6,8 +6,9 @@ import jakarta.ws.rs.NotFoundException;
 import org.delicias.common.dto.product.ProductResumeDTO;
 import org.delicias.menu.domain.repository.MenuRepository;
 import org.delicias.menu_products.domain.model.MenuProduct;
-import org.delicias.menu_products.domain.repository.MenuProductRepository;
 import org.delicias.minio.MinioStorageService;
+import org.delicias.minio.utils.MinioRS;
+import org.delicias.minio.utils.MinioSize;
 import org.delicias.mobile.dto.RestaurantDetailDTO;
 import org.delicias.mobile.dto.StoreResumeInfoDTO;
 import org.delicias.products_recommend.domain.model.ProductRecommend;
@@ -80,13 +81,20 @@ public class RestaurantDetailService {
         return RestaurantDetailDTO.builder()
                 .id(restaurant.getId())
                 .name(restaurant.getName())
-                .imageCoverUrl(minioStorageService.imgBannerUrl(
-                        Optional.ofNullable(restaurant.getImageCover()).orElse(defaultLogo)
+                .imageCoverUrl(minioStorageService.pictureUrl(
+                        Optional.ofNullable(restaurant.getImageCover()).orElse(defaultLogo),
+                        MinioSize.BANNER_CE,
+                        MinioRS.FIT,
+                        (short)70
                 ))
 
                 .info(RestaurantDetailDTO.RestaurantInfo.builder()
-                        .imageLogoUrl(minioStorageService.thumbnailUrl(
-                                        Optional.ofNullable(restaurant.getImageLogo()).orElse(defaultLogo)))
+                        .imageLogoUrl(minioStorageService.pictureUrl(
+                                        Optional.ofNullable(restaurant.getImageLogo()).orElse(defaultLogo),
+                                MinioSize.MEDIUM,
+                                MinioRS.FIT,
+                                (short)70
+                        ))
                         .hourStart(scheduled.getStartTime())
                         .hourEnd(scheduled.getEndTime())
                         .available(timeNow.isAfter(scheduled.getStartTime()) && timeNow.isBefore(scheduled.getEndTime()))
@@ -101,8 +109,11 @@ public class RestaurantDetailService {
 
                                     return RestaurantDetailDTO.RecommendedItem.builder()
                                             .id(product.id())
-                                            .picture(minioStorageService.thumbnailUrl(
-                                                    product.pictureUrl()
+                                            .picture(minioStorageService.pictureUrl(
+                                                    product.pictureUrl(),
+                                                    MinioSize.MEDIUM,
+                                                    MinioRS.FIT,
+                                                    (short)70
                                             ))
                                             .name(product.name())
                                             .priceList(product.listPrice())
@@ -121,8 +132,11 @@ public class RestaurantDetailService {
 
                                             return RestaurantDetailDTO.ProductMenu.builder()
                                                     .id(product.id())
-                                                    .picture(minioStorageService.thumbnailUrl(
-                                                            product.pictureUrl()
+                                                    .picture(minioStorageService.pictureUrl(
+                                                            product.pictureUrl(),
+                                                            MinioSize.MEDIUM,
+                                                            MinioRS.FIT,
+                                                            (short)70
                                                     ))
                                                     .name(product.name())
                                                     .priceList(product.listPrice())
@@ -145,11 +159,17 @@ public class RestaurantDetailService {
         RestaurantScheduled scheduled = getScheduled(restaurantTmplId);
 
         return new StoreResumeInfoDTO(
-                minioStorageService.fitThumbnailUrl(
-                        Optional.ofNullable(restaurant.getImageLogo()).orElse(defaultLogo)
+                minioStorageService.pictureUrl(
+                        Optional.ofNullable(restaurant.getImageLogo()).orElse(defaultLogo),
+                        MinioSize.MEDIUM,
+                        MinioRS.FIT,
+                        (short)70
                 ),
-                minioStorageService.imgBannerUrl(
-                        Optional.ofNullable(restaurant.getImageCover()).orElse(defaultLogo)
+                minioStorageService.pictureUrl(
+                        Optional.ofNullable(restaurant.getImageCover()).orElse(defaultLogo),
+                        MinioSize.BANNER_CE,
+                        MinioRS.FIT,
+                        (short)70
                 ),
                 restaurant.getName(),
                 Optional.ofNullable(restaurant.getAddress()).orElse("--"),

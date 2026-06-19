@@ -5,6 +5,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.delicias.common.dto.PagedResult;
 import org.delicias.minio.MinioStorageService;
+import org.delicias.minio.utils.MinioRS;
+import org.delicias.minio.utils.MinioSize;
 import org.delicias.restaurant.domain.repository.RestaurantTemplateRepository;
 import org.delicias.restaurant.dto.RestaurantTmplOptionDTO;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -42,8 +44,11 @@ public class SearchRestaurantTmplService {
                         it.getName(),
                         it.getStoreType().getDescription(),
                         Optional.ofNullable(it.getAddress()).orElse("--"),
-                        storageService.smallImage(Optional.ofNullable(it.getImageLogo())
-                                .orElse(defaultLogo))
+                        storageService.pictureUrl(Optional.ofNullable(it.getImageLogo())
+                                .orElse(defaultLogo),
+                                MinioSize.SMALL,
+                                MinioRS.FIT,
+                                (short)70)
                 ))
                 .toList();
 

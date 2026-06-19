@@ -10,6 +10,8 @@ import org.delicias.business.dto.BusinessCategoryRelItemDTO;
 import org.delicias.business.dto.BusinessCategoryReqDTO;
 import org.delicias.common.dto.PagedResult;
 import org.delicias.minio.MinioStorageService;
+import org.delicias.minio.utils.MinioRS;
+import org.delicias.minio.utils.MinioSize;
 import org.delicias.restaurant.domain.model.RestaurantTemplate;
 import org.delicias.restaurant.domain.repository.RestaurantTemplateRepository;
 import org.delicias.restaurant.dto.RestaurantTmplOptionDTO;
@@ -77,8 +79,11 @@ public class BusinessCategoryService {
                         model.getRestaurantTmpl().getName(),
                         model.getRestaurantTmpl().getStoreType().getDescription(),
                         Optional.ofNullable(model.getRestaurantTmpl().getAddress()).orElse("--"),
-                        minioStorageService.fitThumbnailUrl(
-                                Optional.ofNullable(model.getRestaurantTmpl().getImageLogo()).orElse(defaultLogo)
+                        minioStorageService.pictureUrl(
+                                Optional.ofNullable(model.getRestaurantTmpl().getImageLogo()).orElse(defaultLogo),
+                                MinioSize.MEDIUM,
+                                MinioRS.FIT,
+                                (short)70
                         )
                 )
         );
@@ -103,8 +108,11 @@ public class BusinessCategoryService {
                         it.getSequence(),
                         it.getActive(),
                         it.getRestaurantTmpl().getName(),
-                        minioStorageService.fitThumbnailUrl(
-                                Optional.ofNullable(it.getRestaurantTmpl().getImageLogo()).orElse(defaultLogo)
+                        minioStorageService.pictureUrl(
+                                Optional.ofNullable(it.getRestaurantTmpl().getImageLogo()).orElse(defaultLogo),
+                                MinioSize.MEDIUM,
+                                MinioRS.FIT,
+                                (short)70
                         ),
                         Optional.ofNullable(it.getRestaurantTmpl().getAddress()).orElse("--")
                 )).toList(),

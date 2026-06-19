@@ -12,6 +12,8 @@ import org.delicias.menu.dto.MenuDTO;
 import org.delicias.menu_products.domain.model.MenuProduct;
 import org.delicias.menu_products.domain.repository.MenuProductRepository;
 import org.delicias.minio.MinioStorageService;
+import org.delicias.minio.utils.MinioRS;
+import org.delicias.minio.utils.MinioSize;
 import org.delicias.rest.clients.ProductClient;
 import org.delicias.restaurant.domain.model.RestaurantTemplate;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
@@ -127,7 +129,11 @@ public class MenuService {
                                 .description(prod.description())
                                 .listPrice(prod.listPrice())
                                 .pictureUrl(
-                                        minioStorageService.thumbnailUrl(prod.pictureUrl())
+                                        minioStorageService.pictureUrl(
+                                                prod.pictureUrl(),
+                                                MinioSize.MEDIUM,
+                                                MinioRS.FIT,
+                                                (short)70)
                                 )
                                 .sequence(mp.getSequence())
                                 .build();

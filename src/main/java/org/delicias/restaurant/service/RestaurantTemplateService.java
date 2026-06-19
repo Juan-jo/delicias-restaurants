@@ -8,6 +8,8 @@ import org.delicias.common.dto.PagedResult;
 import org.delicias.common.dto.restaurant.RestaurantLatLngDTO;
 import org.delicias.common.dto.restaurant.RestaurantResumeDTO;
 import org.delicias.minio.MinioStorageService;
+import org.delicias.minio.utils.MinioRS;
+import org.delicias.minio.utils.MinioSize;
 import org.delicias.restaurant.domain.model.RestaurantTemplate;
 import org.delicias.restaurant.domain.repository.RestaurantTemplateRepository;
 import org.delicias.restaurant.dto.RestaurantFilterItemDTO;
@@ -104,7 +106,12 @@ public class RestaurantTemplateService {
                 .stream().map(it -> RestaurantFilterItemDTO.builder()
                         .id(it.getId())
                         .name(it.getName())
-                        .picture(minioStorageService.smallImage(Optional.ofNullable(it.getImageLogo()).orElse(defaultLogo)))
+                        .picture(minioStorageService.pictureUrl(
+                                Optional.ofNullable(it.getImageLogo()).orElse(defaultLogo),
+                                MinioSize.SMALL,
+                                MinioRS.FIT,
+                                (short) 70
+                        ))
                         .storeType(it.getStoreType().getDescription())
                         .address(Optional.ofNullable(it.getAddress()).orElse("--"))
                         .build()).toList();
@@ -136,7 +143,13 @@ public class RestaurantTemplateService {
 
         restaurantTemplate.setImageLogo(logoUrl);
 
-        return Map.of("picture", minioStorageService.detailUrl(logoUrl));
+        return Map.of("picture",
+                minioStorageService.pictureUrl(
+                        logoUrl,
+                        MinioSize.MEDIUM,
+                        MinioRS.FIT,
+                        (short) 70
+                ));
     }
 
     @Transactional
@@ -152,7 +165,13 @@ public class RestaurantTemplateService {
 
         restaurantTemplate.setImageCover(logoUrl);
 
-        return Map.of("picture", minioStorageService.imgBannerUrl(logoUrl));
+        return Map.of("picture",
+                minioStorageService.pictureUrl(
+                        logoUrl,
+                        MinioSize.BANNER_CE,
+                        MinioRS.FIT,
+                        (short) 70
+                ));
     }
 
     public List<RestaurantResumeDTO> findByIds(List<Integer> ids) {
@@ -166,6 +185,7 @@ public class RestaurantTemplateService {
                         .logoUrl(Optional.ofNullable(it.getImageLogo()).orElse(defaultLogo))
                         .coverUrl(Optional.ofNullable(it.getImageCover()).orElse(defaultLogo))
                         .address(Optional.ofNullable(it.getAddress()).orElse("Desconocido"))
+                        .storeType(it.getStoreType())
                         .build()).toList();
     }
 
@@ -245,8 +265,12 @@ public class RestaurantTemplateService {
                 .description(template.getDescription())
                 .phone(template.getPhone())
                 .logoPicture(
-                        minioStorageService.detailUrl(Optional.ofNullable(template.getImageLogo())
-                                .orElse(defaultLogo))
+                        minioStorageService.pictureUrl(
+                                Optional.ofNullable(template.getImageLogo()).orElse(defaultLogo),
+                                MinioSize.MEDIUM,
+                                MinioRS.FILL,
+                                (short) 70
+                        )
                 )
                 .storeType(template.getStoreType())
                 .build();
@@ -261,15 +285,24 @@ public class RestaurantTemplateService {
                 .description(template.getDescription())
                 .phone(template.getPhone())
                 .address(template.getAddress())
-                .logoPicture(minioStorageService.thumbnailUrl(Optional.ofNullable(template.getImageLogo())
-                                .orElse(defaultLogo)))
+                .logoPicture(minioStorageService.pictureUrl(
+                        Optional.ofNullable(template.getImageLogo()).orElse(defaultLogo),
+                        MinioSize.MEDIUM,
+                        MinioRS.FIT,
+                        (short) 70)
+                )
                 .coverPicture(
-                        minioStorageService.imgBannerUrl(Optional.ofNullable(template.getImageCover())
-                                .orElse(defaultLogo))
+                        minioStorageService.pictureUrl(
+                                Optional.ofNullable(template.getImageCover()).orElse(defaultLogo),
+                                MinioSize.BANNER_CE,
+                                MinioRS.FILL,
+                                (short) 70
+                        )
                 )
                 .storeType(template.getStoreType())
                 .build();
     }
+
 
 
 

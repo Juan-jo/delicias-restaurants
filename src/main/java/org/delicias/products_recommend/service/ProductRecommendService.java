@@ -9,6 +9,8 @@ import jakarta.ws.rs.NotFoundException;
 import org.delicias.common.dto.PagedResult;
 import org.delicias.common.dto.product.ProductResumeDTO;
 import org.delicias.minio.MinioStorageService;
+import org.delicias.minio.utils.MinioRS;
+import org.delicias.minio.utils.MinioSize;
 import org.delicias.products_recommend.domain.model.ProductRecommend;
 import org.delicias.products_recommend.domain.repository.ProductRecommendRepository;
 import org.delicias.products_recommend.dto.CreateProductRecommendDTO;
@@ -84,7 +86,12 @@ public class ProductRecommendService {
                         .name(product.name())
                         .description(product.description())
                         .listPrice(product.listPrice())
-                        .picture(minioStorageService.thumbnailUrl(product.pictureUrl()))
+                        .picture(minioStorageService.pictureUrl(
+                                product.pictureUrl(),
+                                MinioSize.MEDIUM,
+                                MinioRS.FIT,
+                                (short)70
+                        ))
                         .build())
                 .build();
     }
@@ -149,7 +156,12 @@ public class ProductRecommendService {
                             .description(prod.description())
                             .listPrice(prod.listPrice())
                             .pictureUrl(
-                                    minioStorageService.thumbnailUrl(prod.pictureUrl())
+                                    minioStorageService.pictureUrl(
+                                            prod.pictureUrl(),
+                                            MinioSize.MEDIUM,
+                                            MinioRS.FIT,
+                                            (short)70
+                                    )
                             )
                             .sequence(mp.getSequence())
                             .build();
