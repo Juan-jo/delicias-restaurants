@@ -22,4 +22,14 @@ public class RestaurantDetailResource {
                 service.findDetail(restaurantId)
         ).build();
     }
+
+    @GET
+    @Path("/resume")
+    public Response getResume(
+            @PathParam("restaurantId") Integer restaurantId
+    ) {
+        return Response.ok(
+                service.getResume(restaurantId)
+        ).build();
+    }
 }

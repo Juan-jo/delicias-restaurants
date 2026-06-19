@@ -34,7 +34,7 @@ public class MobileBusinessCategoryService {
 
         return new PagedResult<>(
                 paged.data().stream().map(it -> new MobileBusinessCategDTO(
-                        it.getId(),
+                        it.getRestaurantTmpl().getId(),
                         it.getRestaurantTmpl().getName(),
                         minioStorageService.fitThumbnailUrl(
                                 Optional.ofNullable(it.getRestaurantTmpl().getImageLogo()).orElse(defaultLogo)

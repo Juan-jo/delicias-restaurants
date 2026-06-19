@@ -9,6 +9,7 @@ import org.delicias.menu_products.domain.model.MenuProduct;
 import org.delicias.menu_products.domain.repository.MenuProductRepository;
 import org.delicias.minio.MinioStorageService;
 import org.delicias.mobile.dto.RestaurantDetailDTO;
+import org.delicias.mobile.dto.StoreResumeInfoDTO;
 import org.delicias.products_recommend.domain.model.ProductRecommend;
 import org.delicias.products_recommend.domain.repository.ProductRecommendRepository;
 import org.delicias.rest.clients.ProductClient;
@@ -133,6 +134,31 @@ public class RestaurantDetailService {
                                 .build()).filter(m -> !m.products().isEmpty()).toList()
                 )
                 .build();
+    }
+
+    public StoreResumeInfoDTO getResume(Integer restaurantTmplId) {
+
+        RestaurantTemplate restaurant = templateRepository.findByIdOptional(restaurantTmplId)
+                .orElseThrow(() -> new NotFoundException("RestaurantTemplate Not Found"));
+
+        LocalTime timeNow = LocalTime.now();
+        RestaurantScheduled scheduled = getScheduled(restaurantTmplId);
+
+        return new StoreResumeInfoDTO(
+                minioStorageService.fitThumbnailUrl(
+                        Optional.ofNullable(restaurant.getImageLogo()).orElse(defaultLogo)
+                ),
+                minioStorageService.imgBannerUrl(
+                        Optional.ofNullable(restaurant.getImageCover()).orElse(defaultLogo)
+                ),
+                restaurant.getName(),
+                Optional.ofNullable(restaurant.getAddress()).orElse("--"),
+                new StoreResumeInfoDTO.Schedule(
+                        scheduled.getStartTime(),
+                        scheduled.getEndTime(),
+                        timeNow.isAfter(scheduled.getStartTime()) && timeNow.isBefore(scheduled.getEndTime())
+                )
+        );
     }
 
     private RestaurantScheduled getScheduled(Integer restaurantTmplId) {
