@@ -248,6 +248,9 @@ public class RestaurantTemplateService {
 
             if (fields.contains("cover"))
                 map.put("cover", r.getImageCover());
+
+            if(fields.contains("store_type"))
+                map.put("store_type", r.getStoreType());
         }
 
         return map;
